@@ -1,0 +1,5 @@
+Primary: #424549;
+Secondary: #36393e;
+Accent-Primary: #7289da;
+Accent-Secondary: #0057e7;
+Text: #fff;

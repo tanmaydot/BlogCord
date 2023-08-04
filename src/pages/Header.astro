@@ -1,62 +1,84 @@
 <nav>
-    <div class="navbar-container">
-        <h1 class="logo">TheBlogMaster</h1>
-        <ul class="nav-links">
-            <li><a href="/">Home</a></li>
-            <li><a href="/Blogs">Blogs</a></li>
-            <li><a href="#">More</a></li>
-        </ul>
+    <div class="logo-container">
+        <img src="favicon.svg" alt="icon" />
+        <h1 class="logo"><a href="/">TheBlogMaster</a></h1>
     </div>
+    <ul class="nav-links">
+        <li><a href="/">Home</a></li>
+        <li><a href="/Blogs">Blogs</a></li>
+        <li><a href="#">More</a></li>
+    </ul>
 </nav>
+
 <style>
-body {
-    background-color: #424549;
-    margin: 0;
-    padding: 0;
-    font-family: Arial, sans-serif;
-}
+    body {
+        margin: 0;
+        padding: 0;
+        
+    }
 
-nav {
-    background-color: #36393e;
-    color: #fff;
-}
+    img{
+        width: 2.5em;
+    }
+    img:hover{
+        transform: scale(1.2);
+    }
 
-.navbar-container {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 10px;
-}
+    .logo a:hover{
+        cursor: pointer;
+        transform: scale(1.2);
+        color: #fff;
+    }
 
-.logo {
-    font-size: 24px;
-    margin: 0;
-    color: #7289da;
-}
+    nav {
+        background-color: #36393e;
+        color: #fff;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+    }
 
-.nav-links {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-}
+    .logo-container {
+        display: flex;
+        align-items: center;
+    }
 
-.nav-links li {
-    display: inline-block;
-    margin-left: 20px;
-}
+    .logo a {
+        font-size: 1.5rem;
+        color: #7289da;
+        margin: 0;
+        margin-left: 10px;
+        text-decoration: none;
+    }
 
-.nav-links li:first-child {
-    margin-left: 0;
-}
+    .nav-links {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        align-items: center;
+    }
 
-.nav-links li a {
-    text-decoration: none;
-    color: #fff;
-}
+    .nav-links li {
+        margin-left: 20px;
+    }
 
-.nav-links li a:hover {
-    color: #7289da;
-}
+    .nav-links li:first-child {
+        margin-left: 0;
+    }
+
+    .nav-links li a {
+        text-decoration: none;
+        color: #fff;
+        transition: color 0.3s ease;
+        padding: 5px 10px;
+    }
+
+    .nav-links li a:hover {
+        color: #7289da;
+    }
 </style>
