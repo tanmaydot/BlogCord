@@ -6,19 +6,11 @@ import Footer from './Footer.astro';
 import Header from './Header.astro';
 ---
 
-<Layout title="theblogmaster">
-	<main>
-		<Header />   
-		<Home />
-		<Blogs />
-		<Footer />
-	</main>
+<Layout title="BlogCord">
+    <main class="min-h-screen bg-gray-900 text-white font-sans">
+        <Header />   
+        <Home />
+        <Blogs />
+        <Footer />
+    </main>
 </Layout>
-
-<style>
-	:root{
-		background-color: #36393e;
-		color: 	#fff;
-		font-family: Arial, sans-serif;
-	}
-</style>
