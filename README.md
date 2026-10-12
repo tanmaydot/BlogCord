@@ -2,9 +2,9 @@
 
 A Discord-style blog template for [Astro](https://astro.build). Tags are channels, posts are messages, and `Ctrl+K` is the quick switcher.
 
-[Demo](https://the-blog-master.vercel.app) · [Astro theme listing](https://astro.build/themes/details/blogcord)
+[Live demo](https://blog-cord-ten.vercel.app/) · [Astro theme listing](https://portal.astro.build/themes/blogcordv2/)
 
-![BlogCord](public/DiscordThemeAstroBlogTemplate.png)
+![BlogCord home feed](public/index_page.png)
 
 ## Features
 
@@ -14,6 +14,19 @@ A Discord-style blog template for [Astro](https://astro.build). Tags are channel
 - `Ctrl/Cmd+K` search, RSS feed, sitemap, view transitions
 - Optional [Giscus](https://giscus.app) comments
 - Astro + Tailwind CSS v4, no client framework
+
+## Screenshots
+
+**Channel (tag) page**
+
+![A tag channel page](public/new_page.png)
+
+**Mobile**: the feed, and the sidebar drawer
+
+<p>
+  <img src="public/mobile_index.png" alt="BlogCord on mobile" width="240" />
+  <img src="public/mobile_sidebar.png" alt="BlogCord mobile sidebar drawer" width="240" />
+</p>
 
 ## Quick start
 
