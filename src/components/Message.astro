@@ -1,0 +1,29 @@
+---
+import { SITE } from '../site.config';
+import { formatDate, readingTime, slugify, url, type Post } from '../lib';
+interface Props { post: Post }
+const { post } = Astro.props;
+const { title, description, pubDate, tags, author, pinned } = post.data;
+const name = author ?? SITE.author.name;
+---
+
+<article class="group relative flex gap-4 px-4 py-3 hover:bg-black/[0.04] md:px-6">
+  <div class="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-accent font-bold text-white" aria-hidden="true">{name[0]}</div>
+  <div class="min-w-0 flex-1">
+    <header class="flex flex-wrap items-baseline gap-x-2">
+      <span class="font-medium text-strong">{name}</span>
+      <time class="text-xs text-muted" datetime={pubDate.toISOString()}>{formatDate(pubDate)}</time>
+      {pinned && <span class="text-xs text-muted" title="Pinned">📌</span>}
+    </header>
+    <h2 class="mt-0.5 text-lg font-semibold">
+      <a href={url(`/posts/${post.id}/`)} class="text-link hover:underline">{title}</a>
+    </h2>
+    <p class="text-body">{description}</p>
+    <footer class="mt-2 flex flex-wrap items-center gap-2 text-xs text-muted">
+      {tags.map((t) => (
+        <a href={url(`/tags/${slugify(t)}/`)} class="rounded-md border border-elev bg-side px-2 py-0.5 hover:border-accent hover:text-strong">#{slugify(t)}</a>
+      ))}
+      <span>{readingTime(post.body)} min read</span>
+    </footer>
+  </div>
+</article>

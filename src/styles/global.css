@@ -1,0 +1,87 @@
+@import 'tailwindcss';
+
+/* Theme tokens. Change these to re-skin everything. */
+:root {
+  --bg-rail: #1e1f22;
+  --bg-side: #2b2d31;
+  --bg-main: #313338;
+  --bg-elev: #383a40;
+  --line: #1f2023;
+  --text: #dbdee1;
+  --strong: #f2f3f5;
+  --muted: #949ba4;
+  --accent: #5865f2;
+  --accent-hover: #4752c4;
+  --link: #00a8fc;
+  color-scheme: dark;
+}
+:root[data-theme='light'] {
+  --bg-rail: #e3e5e8;
+  --bg-side: #f2f3f5;
+  --bg-main: #ffffff;
+  --bg-elev: #ebedef;
+  --line: #e1e2e5;
+  --text: #313338;
+  --strong: #060607;
+  --muted: #5c5e66;
+  --link: #006ce7;
+  color-scheme: light;
+}
+:root[data-theme='amoled'] {
+  --bg-rail: #000000;
+  --bg-side: #0a0a0b;
+  --bg-main: #000000;
+  --bg-elev: #151517;
+  --line: #1c1c1f;
+}
+
+@theme inline {
+  --color-rail: var(--bg-rail);
+  --color-side: var(--bg-side);
+  --color-main: var(--bg-main);
+  --color-elev: var(--bg-elev);
+  --color-line: var(--line);
+  --color-body: var(--text);
+  --color-strong: var(--strong);
+  --color-muted: var(--muted);
+  --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+  --color-link: var(--link);
+  --font-sans: 'gg sans', 'Noto Sans', 'Segoe UI', system-ui, -apple-system, sans-serif;
+}
+
+html { background: var(--bg-main); color: var(--text); font-family: var(--font-sans); }
+body { margin: 0; }
+:focus-visible { outline: 2px solid var(--link); outline-offset: 2px; }
+::selection { background: color-mix(in srgb, var(--accent) 45%, transparent); }
+
+/* Layout: rail | channels | content. Below md the first two become a drawer. */
+.shell { display: grid; grid-template-columns: 72px 240px minmax(0, 1fr); height: 100dvh; }
+.nav { display: contents; }
+.scroll { overflow-y: auto; scrollbar-width: thin; scrollbar-color: var(--bg-elev) transparent; }
+.backdrop { display: none; }
+@media (max-width: 767px) {
+  .shell { grid-template-columns: minmax(0, 1fr); }
+  .nav {
+    display: flex; position: fixed; inset: 0 auto 0 0; z-index: 40; width: min(312px, 88vw);
+    transform: translateX(-100%); transition: transform 0.2s ease;
+  }
+  :root[data-nav='open'] .nav { transform: none; }
+  :root[data-nav='open'] .backdrop { display: block; position: fixed; inset: 0; z-index: 30; background: rgb(0 0 0 / 0.6); }
+}
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+
+/* Post body */
+.prose-cord { line-height: 1.7; font-size: 1.0625rem; }
+.prose-cord > * + * { margin-top: 1.1em; }
+.prose-cord h2 { font-size: 1.5rem; font-weight: 700; color: var(--strong); margin-top: 1.8em; }
+.prose-cord h3 { font-size: 1.2rem; font-weight: 700; color: var(--strong); margin-top: 1.5em; }
+.prose-cord a { color: var(--link); text-decoration: underline; text-underline-offset: 2px; }
+.prose-cord ul { list-style: disc; padding-left: 1.4em; }
+.prose-cord ol { list-style: decimal; padding-left: 1.4em; }
+.prose-cord blockquote { border-left: 4px solid var(--bg-elev); padding-left: 1em; color: var(--muted); }
+.prose-cord code { background: var(--bg-side); padding: 0.15em 0.4em; border-radius: 4px; font-size: 0.9em; }
+.prose-cord pre { background: var(--bg-rail) !important; border: 1px solid var(--line); padding: 1em; border-radius: 8px; overflow-x: auto; }
+.prose-cord pre code { background: none; padding: 0; }
+.prose-cord img { max-width: 100%; border-radius: 8px; }
+.prose-cord hr { border-color: var(--bg-elev); }

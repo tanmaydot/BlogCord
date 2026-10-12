@@ -1,18 +1,173 @@
---- 
-const { title } = Astro.props;
+---
+import { ClientRouter } from 'astro:transitions';
+import '../styles/global.css';
+import { SITE } from '../site.config';
+import { getPosts, getTags } from '../lib';
+import ServerRail from '../components/ServerRail.astro';
+import ChannelList from '../components/ChannelList.astro';
+import TopBar from '../components/TopBar.astro';
+import SearchDialog from '../components/SearchDialog.astro';
+
+interface Props {
+  title?: string;
+  description?: string;
+  channel?: string;
+  topic?: string;
+}
+const { title, description = SITE.description, channel = 'all-posts', topic = SITE.description } = Astro.props;
+const fullTitle = title ? `${title} · ${SITE.title}` : SITE.title;
+const canonical = new URL(Astro.url.pathname, Astro.site);
+const posts = await getPosts();
+const tags = getTags(posts);
 ---
 
-<!DOCTYPE html>
-<html lang="en">
-	<head>
-		<meta charset="UTF-8" />
-		<meta name="description" content="Astro description">
-		<meta name="viewport" content="width=device-width" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<meta name="generator" content={Astro.generator} />
-		<title>{title}</title>
-	</head>
-	<body>
-		<slot />
-	</body>
+<!doctype html>
+<html lang={SITE.lang} data-theme="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="alternate" type="application/rss+xml" title={SITE.title} href="/rss.xml" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={SITE.title} />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta name="twitter:card" content="summary" />
+    <meta name="generator" content={Astro.generator} />
+    <script is:inline>
+      try {
+        var t = localStorage.getItem('theme');
+        if (t) document.documentElement.dataset.theme = t;
+      } catch (e) {}
+    </script>
+    <ClientRouter />
+  </head>
+  <body>
+    <a href="#content" class="sr-only focus:not-sr-only focus:fixed focus:z-50 focus:m-2 focus:rounded focus:bg-accent focus:px-3 focus:py-2 focus:text-white">Skip to content</a>
+    <div class="shell">
+      <div class="backdrop" data-action="close-nav"></div>
+      <div class="nav" id="nav">
+        <ServerRail />
+        <ChannelList tags={tags} total={posts.length} />
+      </div>
+      <div class="flex min-w-0 flex-col bg-main">
+        <TopBar channel={channel} topic={topic} />
+        <main id="content" class="scroll flex-1" tabindex="-1">
+          <slot />
+        </main>
+      </div>
+    </div>
+    <SearchDialog />
+  </body>
 </html>
+
+<script>
+  const root = document.documentElement;
+  const THEMES = ['dark', 'light', 'amoled'];
+
+  const setTheme = (t: string) => {
+    root.dataset.theme = t;
+    try { localStorage.setItem('theme', t); } catch {}
+  };
+  const closeNav = () => delete root.dataset.nav;
+
+  document.addEventListener('click', (e) => {
+    const el = (e.target as HTMLElement).closest<HTMLElement>('[data-action]');
+    if (el) {
+      const a = el.dataset.action;
+      if (a === 'toggle-nav') root.dataset.nav === 'open' ? closeNav() : (root.dataset.nav = 'open');
+      if (a === 'close-nav') closeNav();
+      if (a === 'cycle-theme') setTheme(THEMES[(THEMES.indexOf(root.dataset.theme ?? 'dark') + 1) % THEMES.length]);
+      if (a === 'open-search') openSearch();
+      return;
+    }
+    const dialog = document.getElementById('search') as HTMLDialogElement | null;
+    if (e.target === dialog) dialog?.close();
+    if ((e.target as HTMLElement).closest('#nav a')) closeNav();
+  });
+
+  // Keep the chosen theme across view-transition page swaps.
+  document.addEventListener('astro:before-swap', (e) => {
+    (e as any).newDocument.documentElement.dataset.theme = root.dataset.theme;
+  });
+  document.addEventListener('astro:after-swap', closeNav);
+
+  // Ctrl/Cmd+K quick switcher
+  type Item = { title: string; description: string; url: string; tags: string[] };
+  let index: Item[] | null = null;
+  let active = 0;
+
+  async function openSearch() {
+    const dialog = document.getElementById('search') as HTMLDialogElement | null;
+    if (!dialog || dialog.open) return;
+    dialog.showModal();
+    const input = document.getElementById('search-input') as HTMLInputElement;
+    input.value = '';
+    if (!index) {
+      try { index = await (await fetch(input.dataset.src!)).json(); } catch { index = []; }
+    }
+    render('');
+    input.focus();
+  }
+
+  function render(q: string) {
+    const list = document.getElementById('search-results');
+    if (!list || !index) return;
+    const terms = q.toLowerCase().split(/\s+/).filter(Boolean);
+    const hits = index
+      .filter((p) => terms.every((t) => `${p.title} ${p.description} ${p.tags.join(' ')}`.toLowerCase().includes(t)))
+      .slice(0, 8);
+    active = 0;
+    list.replaceChildren(
+      ...(hits.length
+        ? hits.map((p, i) => {
+            const a = document.createElement('a');
+            a.href = p.url;
+            a.setAttribute('role', 'option');
+            a.className = 'block rounded px-3 py-2 aria-selected:bg-elev hover:bg-elev';
+            a.setAttribute('aria-selected', String(i === 0));
+            const t = document.createElement('div');
+            t.className = 'font-medium text-strong';
+            t.textContent = p.title;
+            const d = document.createElement('div');
+            d.className = 'truncate text-sm text-muted';
+            d.textContent = p.description;
+            a.append(t, d);
+            return a;
+          })
+        : [Object.assign(document.createElement('p'), { className: 'px-3 py-6 text-center text-muted', textContent: 'No posts found.' })]),
+    );
+  }
+
+  document.addEventListener('input', (e) => {
+    if ((e.target as HTMLElement).id === 'search-input') render((e.target as HTMLInputElement).value);
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+      e.preventDefault();
+      openSearch();
+      return;
+    }
+    const dialog = document.getElementById('search') as HTMLDialogElement | null;
+    if (!dialog?.open) return;
+    const items = [...document.querySelectorAll<HTMLAnchorElement>('#search-results a')];
+    if (!items.length) return;
+    if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+      e.preventDefault();
+      active = (active + (e.key === 'ArrowDown' ? 1 : -1) + items.length) % items.length;
+      items.forEach((a, i) => a.setAttribute('aria-selected', String(i === active)));
+      items[active].scrollIntoView({ block: 'nearest' });
+    }
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      items[active].click();
+      dialog.close();
+    }
+  });
+</script>

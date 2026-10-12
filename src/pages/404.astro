@@ -1,0 +1,13 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { url } from '../lib';
+---
+
+<Layout title="Channel not found" channel="404" topic="This channel doesn't exist">
+  <div class="mx-auto max-w-xl px-6 py-24 text-center">
+    <p class="text-6xl">🔇</p>
+    <h2 class="mt-4 text-2xl font-bold text-strong">Channel not found</h2>
+    <p class="mt-2 text-muted">That page doesn't exist, or it was moved.</p>
+    <a href={url('/')} class="mt-6 inline-block rounded bg-accent px-4 py-2 font-medium text-white hover:bg-accent-hover">Back to #all-posts</a>
+  </div>
+</Layout>

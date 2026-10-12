@@ -1,16 +1,36 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import Home from './Home.astro'
-import Blogs from './Blogs.astro';
-import Footer from './Footer.astro';
-import Header from './Header.astro';
+import Message from '../components/Message.astro';
+import { getPosts, formatDate } from '../lib';
+import { SITE } from '../site.config';
+
+const posts = await getPosts();
+const pinned = posts.filter((p) => p.data.pinned);
+const rest = posts.filter((p) => !p.data.pinned);
+const month = (d: Date) => d.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
 ---
 
-<Layout title="BlogCord">
-    <main class="min-h-screen bg-gray-900 text-white font-sans">
-        <Header />   
-        <Home />
-        <Blogs />
-        <Footer />
-    </main>
+<Layout channel="all-posts">
+  <div class="mx-auto max-w-3xl py-6">
+    <div class="px-4 pb-4 md:px-6">
+      <h2 class="text-3xl font-bold text-strong">Welcome to #{SITE.title}!</h2>
+      <p class="mt-1 text-muted">This is the start of the #all-posts channel. {posts.length} posts so far, latest on {posts[0] ? formatDate(posts[0].data.pubDate) : '—'}.</p>
+    </div>
+
+    {pinned.length > 0 && (
+      <>
+        <div class="mx-4 my-3 flex items-center gap-3 text-xs font-semibold text-muted md:mx-6"><hr class="flex-1 border-elev" />📌 Pinned<hr class="flex-1 border-elev" /></div>
+        {pinned.map((post) => <Message post={post} />)}
+      </>
+    )}
+
+    {rest.map((post, i) => (
+      <>
+        {(i === 0 || month(rest[i - 1].data.pubDate) !== month(post.data.pubDate)) && (
+          <div class="mx-4 my-3 flex items-center gap-3 text-xs font-semibold text-muted md:mx-6"><hr class="flex-1 border-elev" />{month(post.data.pubDate)}<hr class="flex-1 border-elev" /></div>
+        )}
+        <Message post={post} />
+      </>
+    ))}
+  </div>
 </Layout>

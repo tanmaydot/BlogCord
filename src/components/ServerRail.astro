@@ -1,0 +1,21 @@
+---
+import { SITE } from '../site.config';
+import { url } from '../lib';
+const home = url('/');
+const isHome = Astro.url.pathname === home || Astro.url.pathname === home.replace(/\/$/, '');
+const btn = 'grid h-12 w-12 place-items-center rounded-[24px] bg-side text-sm font-bold text-body transition-[border-radius,background-color,color] duration-200 hover:rounded-[16px] hover:bg-accent hover:text-white';
+---
+
+<nav aria-label="Servers" class="scroll flex w-[72px] shrink-0 flex-col items-center gap-2 bg-rail py-3">
+  <a href={home} aria-label={SITE.title} aria-current={isHome ? 'page' : undefined}
+     class:list={[btn, isHome && '!rounded-[16px] !bg-accent !text-white']}>
+    {SITE.title.slice(0, 2)}
+  </a>
+  <hr class="my-1 w-8 border-line" />
+  {SITE.links.map((l) => (
+    <a href={l.href} aria-label={l.label} title={l.label} class={btn}
+       target={l.href.startsWith('http') ? '_blank' : undefined} rel="noopener">
+      {l.icon}
+    </a>
+  ))}
+</nav>

@@ -1,0 +1,15 @@
+---
+interface Props { channel: string; topic: string }
+const { channel, topic } = Astro.props;
+---
+
+<header class="flex h-12 shrink-0 items-center gap-3 border-b border-line bg-main px-4 shadow-sm">
+  <button type="button" class="grid h-8 w-8 place-items-center rounded text-muted hover:text-strong md:hidden" data-action="toggle-nav" aria-label="Toggle navigation">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+  </button>
+  <h1 class="flex items-center gap-1.5 text-base font-semibold text-strong"><span class="text-2xl font-normal text-muted">#</span>{channel}</h1>
+  <p class="hidden min-w-0 flex-1 truncate border-l border-elev pl-3 text-sm text-muted sm:block">{topic}</p>
+  <button type="button" data-action="open-search" class="ml-auto hidden items-center gap-2 rounded bg-rail px-2 py-1 text-xs text-muted hover:text-strong sm:flex">
+    Search <kbd class="rounded bg-elev px-1.5 py-0.5 font-sans">Ctrl K</kbd>
+  </button>
+</header>

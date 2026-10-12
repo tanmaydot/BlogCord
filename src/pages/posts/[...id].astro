@@ -1,0 +1,39 @@
+---
+import { render } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+import Comments from '../../components/Comments.astro';
+import { getPosts, formatDate, readingTime, slugify, url } from '../../lib';
+import { SITE } from '../../site.config';
+
+export async function getStaticPaths() {
+  const posts = await getPosts();
+  return posts.map((post, i) => ({
+    params: { id: post.id },
+    props: { post, newer: posts[i - 1], older: posts[i + 1] },
+  }));
+}
+
+const { post, newer, older } = Astro.props;
+const { Content } = await render(post);
+const { title, description, pubDate, tags, author } = post.data;
+---
+
+<Layout title={title} description={description} channel={slugify(tags[0] ?? 'all-posts')} topic={title}>
+  <article class="mx-auto max-w-3xl px-4 py-8 md:px-6">
+    <header class="mb-8">
+      <h1 class="text-3xl font-bold leading-tight text-strong md:text-4xl">{title}</h1>
+      <p class="mt-2 text-muted">
+        {author ?? SITE.author.name} · <time datetime={pubDate.toISOString()}>{formatDate(pubDate)}</time> · {readingTime(post.body)} min read
+      </p>
+      <div class="mt-3 flex flex-wrap gap-2 text-xs">
+        {tags.map((t) => <a href={url(`/tags/${slugify(t)}/`)} class="rounded-md border border-elev bg-side px-2 py-0.5 text-muted hover:border-accent hover:text-strong">#{slugify(t)}</a>)}
+      </div>
+    </header>
+    <div class="prose-cord"><Content /></div>
+    <nav class="mt-12 grid gap-3 border-t border-elev pt-6 text-sm sm:grid-cols-2" aria-label="More posts">
+      {newer ? <a href={url(`/posts/${newer.id}/`)} class="rounded-lg bg-side p-3 hover:bg-elev"><span class="text-muted">← Newer</span><br /><span class="font-medium text-strong">{newer.data.title}</span></a> : <span />}
+      {older && <a href={url(`/posts/${older.id}/`)} class="rounded-lg bg-side p-3 text-right hover:bg-elev"><span class="text-muted">Older →</span><br /><span class="font-medium text-strong">{older.data.title}</span></a>}
+    </nav>
+    <Comments />
+  </article>
+</Layout>

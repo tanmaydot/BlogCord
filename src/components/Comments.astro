@@ -1,0 +1,11 @@
+---
+import { SITE } from '../site.config';
+const g = SITE.giscus;
+---
+
+{g.repo && (<div class="giscus mt-8"></div>)}
+{g.repo && (
+  <script is:inline src="https://giscus.app/client.js" data-repo={g.repo} data-repo-id={g.repoId}
+    data-category={g.category} data-category-id={g.categoryId} data-mapping="pathname"
+    data-reactions-enabled="1" data-input-position="top" data-theme="preferred_color_scheme" crossorigin="anonymous" async></script>
+)}

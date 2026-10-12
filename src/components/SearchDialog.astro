@@ -1,0 +1,16 @@
+---
+import { url } from '../lib';
+---
+
+<dialog id="search" aria-label="Search posts" class="m-auto mt-[12vh] w-[min(560px,92vw)] rounded-lg border border-line bg-side p-0 text-body shadow-2xl backdrop:bg-black/60">
+  <input
+    id="search-input"
+    type="search"
+    placeholder="Where would you like to go?"
+    autocomplete="off"
+    data-src={url('/search.json')}
+    class="w-full rounded-t-lg border-b border-line bg-rail px-4 py-3 text-strong placeholder:text-muted focus:outline-none"
+  />
+  <div id="search-results" role="listbox" class="max-h-[50vh] overflow-y-auto p-2"></div>
+  <p class="border-t border-line px-4 py-2 text-xs text-muted">↑↓ to navigate · Enter to open · Esc to close</p>
+</dialog>

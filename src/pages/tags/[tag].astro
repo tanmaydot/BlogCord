@@ -1,0 +1,25 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Message from '../../components/Message.astro';
+import { getPosts, getTags, slugify } from '../../lib';
+
+export async function getStaticPaths() {
+  const posts = await getPosts();
+  return getTags(posts).map(([tag]) => ({
+    params: { tag: slugify(tag) },
+    props: { posts: posts.filter((p) => p.data.tags.includes(tag)) },
+  }));
+}
+const { tag } = Astro.params;
+const { posts } = Astro.props;
+---
+
+<Layout title={`#${tag}`} channel={tag} topic={`${posts.length} posts tagged ${tag}`}>
+  <div class="mx-auto max-w-3xl py-6">
+    <div class="px-4 pb-4 md:px-6">
+      <h2 class="text-3xl font-bold text-strong">Welcome to #{tag}!</h2>
+      <p class="mt-1 text-muted">This is the start of the #{tag} channel.</p>
+    </div>
+    {posts.map((post) => <Message post={post} />)}
+  </div>
+</Layout>
